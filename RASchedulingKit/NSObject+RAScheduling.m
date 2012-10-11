@@ -45,7 +45,7 @@ static NSString * const kQueue = @"-[UIViewController(IRDelayedUpdateAdditions) 
 		
 	}];
 
-	[self.ra_operationQueue addOperation:[NSArray arrayWithObject:op]];
+	[self.ra_operationQueue addOperation:op];
 
 }
 
