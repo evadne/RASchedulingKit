@@ -15,14 +15,22 @@ static NSString * const kQueue = @"-[UIViewController(IRDelayedUpdateAdditions) 
 
 @implementation NSObject (RAScheduling)
 
-- (RAOperationQueue *) ra_operationQueue {
+- (NSOperationQueue *) ra_operationQueue {
 
-	RAOperationQueue *queue = objc_getAssociatedObject(self, &kQueue);
+	NSOperationQueue *queue = objc_getAssociatedObject(self, &kQueue);
 	if (!queue) {
-		queue = [[RAOperationQueue alloc] init];
-		queue.maxConcurrentOperationCount = 1;
+		queue = [self ra_newOperationQueue];
 		objc_setAssociatedObject(self, &kQueue, queue, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	}
+	
+	return queue;
+
+}
+
+- (NSOperationQueue *) ra_newOperationQueue {
+
+	NSOperationQueue *queue = [[RAOperationQueue alloc] initWithRunLoopMode:kCFRunLoopDefaultMode];
+	queue.maxConcurrentOperationCount = 1;
 	
 	return queue;
 
@@ -45,7 +53,7 @@ static NSString * const kQueue = @"-[UIViewController(IRDelayedUpdateAdditions) 
 		
 	}];
 
-	[self.ra_operationQueue addOperation:[NSArray arrayWithObject:op]];
+	[self.ra_operationQueue addOperation:op];
 
 }
 

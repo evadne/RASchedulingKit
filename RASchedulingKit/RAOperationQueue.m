@@ -12,6 +12,8 @@ static NSString * const kRAOperationDispatchQueue = @"+[RAOperationQueue dispatc
 
 @interface RAOperationQueue ()
 
+@property (nonatomic, readonly, assign) CFStringRef runLoopMode;
+@property (nonatomic, readonly, assign) CFRunLoopObserverRef runLoopObserver;
 @property (nonatomic, readwrite, assign) NSUInteger suspendingCount;
 
 + (dispatch_queue_t) dispatchQueue;
@@ -20,7 +22,71 @@ static NSString * const kRAOperationDispatchQueue = @"+[RAOperationQueue dispatc
 
 
 @implementation RAOperationQueue
+@synthesize runLoopMode = _runLoopMode;
+@synthesize runLoopObserver = _runLoopObserver;
 @synthesize suspendingCount = _suspendingCount;
+
+- (id) initWithRunLoopMode:(CFStringRef)mode {
+
+	self = [super init];
+	if (!self)
+		return nil;
+	
+	if (mode) {
+
+		__weak typeof(self) wSelf = self;
+		
+		_runLoopMode = mode;
+		_runLoopObserver = CFRunLoopObserverCreateWithHandler(NULL, kCFRunLoopAllActivities, YES, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
+			[wSelf observeRunLoopWithObserver:observer activity:activity];
+		});
+		
+		CFRunLoopAddObserver(CFRunLoopGetMain(), _runLoopObserver, _runLoopMode);
+		
+		CFStringRef currentMode = CFRunLoopCopyCurrentMode(CFRunLoopGetMain());
+		if (![(__bridge NSString *)currentMode isEqualToString:(__bridge NSString *)_runLoopMode]) {
+			[self beginSuspendingOperations];
+		}
+		
+		CFRelease(currentMode);
+	
+	}
+	
+	return self;
+
+}
+
+- (void) dealloc {
+
+	if (_runLoopObserver) {
+		CFRunLoopRemoveObserver(CFRunLoopGetMain(), _runLoopObserver, _runLoopMode);
+		CFRunLoopObserverInvalidate(_runLoopObserver);
+		CFRelease(_runLoopObserver);
+		_runLoopObserver = nil;
+	}
+
+}
+
+- (void) observeRunLoopWithObserver:(CFRunLoopObserverRef)observer activity:(CFRunLoopActivity)activity {
+
+	switch (activity) {
+		
+		case kCFRunLoopEntry: {
+			[self endSuspendingOperations];
+			break;
+		}
+		
+		case kCFRunLoopExit: {
+			[self beginSuspendingOperations];
+			break;
+		}
+		
+		default:
+			break;
+		
+	}
+
+}
 
 - (void) setSuspended:(BOOL)flag {
 

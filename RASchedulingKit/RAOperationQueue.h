@@ -10,6 +10,8 @@
 
 @interface RAOperationQueue : NSOperationQueue
 
+- (id) initWithRunLoopMode:(CFStringRef)mode;	//	NULL for all modes
+
 - (void) beginSuspendingOperations;
 - (void) endSuspendingOperations;
 
