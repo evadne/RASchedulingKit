@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 	s.platform     = :ios, '5.0'
 	s.name         = "RASchedulingKit"
-	s.version      = "0.0.2"
+	s.version      = "0.0.3"
 	s.summary      = "Asynchronous programming made easy."
 	s.homepage     = "http://github.com/evadne/RASchedulingKit"
 	s.author       = { "Evadne Wu" => "ev@radi.ws" }
