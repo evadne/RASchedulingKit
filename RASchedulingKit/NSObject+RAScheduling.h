@@ -10,10 +10,12 @@
 
 @interface NSObject (RAScheduling)
 
-@property (nonatomic, readonly, strong) NSOperationQueue *ra_operationQueue;
 - (NSOperationQueue *) ra_newOperationQueue;
 
 - (void) ra_performBlock:(void(^)(void))block;
 - (void) ra_cancelBlocks;
+
+- (void) ra_beginSuspendingBlocks;
+- (void) ra_endSuspendingBlocks;
 
 @end

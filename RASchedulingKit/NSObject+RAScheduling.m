@@ -53,13 +53,25 @@ static NSString * const kQueue = @"-[UIViewController(IRDelayedUpdateAdditions) 
 		
 	}];
 
-	[self.ra_operationQueue addOperation:op];
+	[[self ra_operationQueue] addOperation:op];
 
 }
 
 - (void) ra_cancelBlocks {
 
-	[self.ra_operationQueue cancelAllOperations];
+	[[self ra_operationQueue] cancelAllOperations];
+
+}
+
+- (void) ra_beginSuspendingBlocks {
+
+	[(RAOperationQueue *)[self ra_operationQueue] beginSuspendingOperations];
+
+}
+
+- (void) ra_endSuspendingBlocks {
+
+	[(RAOperationQueue *)[self ra_operationQueue] endSuspendingOperations];
 
 }
 
