@@ -57,6 +57,26 @@ static NSString * const kQueue = @"-[UIViewController(IRDelayedUpdateAdditions) 
 
 }
 
+- (void) ra_performDeferrableBlock:(void (^)(RAAsyncOperationCallback callback))block {
+
+	NSOperation *op = [RAAsyncOperation operationWithWorker:^(RAAsyncOperationCallback callback) {
+	
+		block(callback);
+		
+	} trampoline:^(IRAsyncOperationInvoker block) {
+		
+		dispatch_async(dispatch_get_main_queue(), block);
+		
+	} callback:nil trampoline:^(IRAsyncOperationInvoker block) {
+		
+		dispatch_async(dispatch_get_main_queue(), block);
+		
+	}];
+
+	[[self ra_operationQueue] addOperation:op];
+
+}
+
 - (void) ra_cancelBlocks {
 
 	[[self ra_operationQueue] cancelAllOperations];

@@ -7,12 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RAAsyncOperation.h"
 
 @interface NSObject (RAScheduling)
 
 - (NSOperationQueue *) ra_newOperationQueue;
 
 - (void) ra_performBlock:(void(^)(void))block;
+- (void) ra_performDeferrableBlock:(void(^)(RAAsyncOperationCallback callback))block;
 - (void) ra_cancelBlocks;
 
 - (void) ra_beginSuspendingBlocks;
